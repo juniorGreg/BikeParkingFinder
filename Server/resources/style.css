@@ -1,0 +1,9 @@
+#mapid { height: 90vh; }
+
+.container{
+    margin : 0;
+    padding:0;
+    //margin-top: -1.5vh;
+    width: 100%
+}
+.navbar{margin-bottom:0;}

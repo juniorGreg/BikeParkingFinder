@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Bike Parking Montreal</title>
+        <link rel="stylesheet" href="resources/leaflet.css" />
+        <script src="resources/leaflet.js"></script>
+        <link rel="stylesheet" href="resources/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+        <script src="resources/jquery-2.1.4.min.js"></script>
+        <script src="resources/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="resources/style.css">
+        <script>
+
+
+            $("document").ready(function(){
+
+                var currentPosition = [45.5077, -73.544];
+                function showPosition(position)
+                {
+                    currentPosition = [position.coords.latitude, position.coords.longitude]
+                    mymap.setView(currentPosition, 15)
+                    L.marker(currentPosition).addTo(mymap)
+                        .bindPopup('Your position')
+                        .openPopup();
+                }
+
+                function getLocation() {
+                    if (navigator.geolocation) {
+                       return navigator.geolocation.getCurrentPosition(showPosition);
+                    } else {
+                        alert("Geolocation is not supported by this browser.");
+
+                    }
+                }
+
+                var mymap = L.map('mapid').setView(currentPosition, 15);
+                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(mymap);
+
+                getLocation()
+            });
+
+        </script>
+
+    </head>
+    <body>
+         <nav class="navbar navbar-inverse">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">BikeParkingMontreal</a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-leaf"></span> Langages
+                  <span class="caret"></span> </a>
+                  <ul class="dropdown-menu">
+                      <li><a href="#">English</a></li>
+                      <li><a href="#">Français</a></li>
+                  </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="container">
+          <div id="mapid"></div>
+
+        </div>
+
+    </body>
+</html>
