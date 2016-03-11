@@ -43,7 +43,7 @@ def parse_csv_file(csv_filepath):
             else:
                 bike_parking.longitude = float(row[26])
                 bike_parking.latitude = float(row[27])
-            bike_parking.capacity = get_capacity(row[6])
+            bike_parking.capacity = get_capacity(row[5])
             bike_parkings.append(bike_parking)
 
     return bike_parkings
@@ -53,6 +53,7 @@ def add_to_database(bike_parking, url, credentials=None):
     server = couchdb.Server(url)
     couchdb.Resource.credentials = credentials
     bike_parking_db = server["bike_parking"]
+
     for parking in bike_parking:
         bike_parking_db.save(parking.__dict__)
 
@@ -63,7 +64,7 @@ def test_get_capacity():
 
 
 if __name__ == "__main__":
-    #test_get_capacity()
-    bike_parking = parse_csv_file("support_velo_sigs.csv")
+    test_get_capacity()
+    #bike_parking = parse_csv_file("support_velo_sigs.csv")
     #print bike_parking
-    add_to_database(bike_parking, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))
+    #add_to_database(bike_parking, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))

@@ -15,18 +15,42 @@
             $("document").ready(function(){
 
                 var currentPosition = [45.5077, -73.544];
+
+
+
                 function showPosition(position)
                 {
-                    currentPosition = [position.coords.latitude, position.coords.longitude]
-                    mymap.setView(currentPosition, 15)
+                    if(position)
+                        currentPosition = [position.coords.latitude, position.coords.longitude];
+                    mymap.setView(currentPosition, 17)
                     L.marker(currentPosition).addTo(mymap)
                         .bindPopup('Your position')
                         .openPopup();
+
+                    var circle = L.circle(currentPosition, 350, {
+                        color: 'red',
+                        fillColor: '#f03',
+                        fillOpacity: 0.5
+                    }).addTo(mymap);
+                    
+                    $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition+"]", function( positions ) {
+
+					  $.each(positions, function( index, value ) {
+						  L.marker(value).addTo(mymap)
+						   .bindPopup('Bike Parking');
+
+					   });
+                   });
                 }
 
                 function getLocation() {
+
                     if (navigator.geolocation) {
-                       return navigator.geolocation.getCurrentPosition(showPosition);
+
+                       navigator.geolocation.getCurrentPosition(showPosition, function(error) {
+                            alert('position not available for the moment.');
+                            showPosition();
+                        },{timeout:5000});
                     } else {
                         alert("Geolocation is not supported by this browser.");
 
@@ -38,7 +62,20 @@
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mymap);
 
-                getLocation()
+                getLocation();
+
+               
+                mymap.on('click', function(e) {	
+					var position = {'coords': {'latitude': e.latlng.lat,
+									  'longitude': e.latlng.lng}};	
+					mymap.clearLayers();
+					showPosition(position);
+				});
+                
+                     
+             
+                
+
             });
 
         </script>
