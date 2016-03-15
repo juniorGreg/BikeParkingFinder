@@ -15,17 +15,20 @@
             $("document").ready(function(){
 
                 var currentPosition = [45.5077, -73.544];
-
+				var markers = new L.FeatureGroup();
 
 
                 function showPosition(position)
                 {
+					
                     if(position)
                         currentPosition = [position.coords.latitude, position.coords.longitude];
                     mymap.setView(currentPosition, 17)
-                    L.marker(currentPosition).addTo(mymap)
+                    var marker = L.marker(currentPosition).addTo(mymap)
                         .bindPopup('Your position')
                         .openPopup();
+                        
+                    markers.addLayer(marker);
 
                     var circle = L.circle(currentPosition, 350, {
                         color: 'red',
@@ -33,12 +36,21 @@
                         fillOpacity: 0.5
                     }).addTo(mymap);
                     
+                    circle.on('dblclick', function(e) {	
+					var position = {'coords': {'latitude': e.latlng.lat,
+										  'longitude': e.latlng.lng}};	
+						markers.clearLayers();
+						showPosition(position);
+					});
+                    
+                    markers.addLayer(circle);
+                    
                     $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition+"]", function( positions ) {
 
 					  $.each(positions, function( index, value ) {
-						  L.marker(value).addTo(mymap)
-						   .bindPopup('Bike Parking');
-
+						  var marker = L.marker(value["coord"]).addTo(mymap)
+						   .bindPopup('Bike Parking<br><button class="removeBikeParking" id="'+value["id"]+'">Remove this parking</button>');
+							markers.addLayer(marker);
 					   });
                    });
                 }
@@ -62,14 +74,39 @@
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mymap);
 
+				mymap.addLayer(markers);
                 getLocation();
 
                
-                mymap.on('click', function(e) {	
+                mymap.on('dblclick', function(e) {	
 					var position = {'coords': {'latitude': e.latlng.lat,
 									  'longitude': e.latlng.lng}};	
-					mymap.clearLayers();
+					markers.clearLayers();
 					showPosition(position);
+				});
+				
+				$("#showall").click(function(){
+					$.getJSON( "/bike_parking/all_locations", function( positions ) {
+
+					  $.each(positions, function( index, value ) {
+						  var marker = L.marker(value["coord"]).addTo(mymap)
+						   .bindPopup('Bike Parking');
+							markers.addLayer(marker);
+					   });
+                   });
+					
+				});
+				
+				$("#addnew").click(function(){
+					$.getJSON( "/bike_parking/all_locations", function( positions ) {
+
+					  $.each(positions, function( index, value ) {
+						  var marker = L.marker(value["coord"]).addTo(mymap)
+						   .bindPopup('Bike Parking');
+							markers.addLayer(marker);
+					   });
+                   });
+					
 				});
                 
                      
@@ -87,6 +124,10 @@
             <div class="navbar-header">
               <a class="navbar-brand" href="#">BikeParkingMontreal</a>
             </div>
+             <ul class="nav navbar-nav">			  
+			  <li><a href="#" id="showall">Show all parking</a></li>		
+			  <li><a href="#" id="addnew">Add new parking</a></li>			  	  
+			</ul>
 
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
