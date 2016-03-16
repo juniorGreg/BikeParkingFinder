@@ -9,6 +9,7 @@
         <script src="resources/jquery-2.1.4.min.js"></script>
         <script src="resources/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="resources/style.css">
+        <script src="resources/map_icons.js"></script>
         <script>
 
 
@@ -24,7 +25,7 @@
                     if(position)
                         currentPosition = [position.coords.latitude, position.coords.longitude];
                     mymap.setView(currentPosition, 17)
-                    var marker = L.marker(currentPosition).addTo(mymap)
+                    var marker = L.marker(currentPosition, {icon: bikeIcon}).addTo(mymap)
                         .bindPopup('Your position')
                         .openPopup();
                         
@@ -33,7 +34,7 @@
                     var circle = L.circle(currentPosition, 350, {
                         color: 'red',
                         fillColor: '#f03',
-                        fillOpacity: 0.5
+                        fillOpacity: 0.25
                     }).addTo(mymap);
                     
                     circle.on('dblclick', function(e) {	
