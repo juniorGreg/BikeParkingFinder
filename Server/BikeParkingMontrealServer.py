@@ -64,6 +64,7 @@ class BikeParkingQueryHandler(RequestHandler):
                 bike_parking.latitude = coord[0]
                 bike_parking.longitude = coord[1]
                 bike_parking.capacity = capacity
+                bike_parking.status = 1
                 self.bike_parking_db.save(bike_parking.__dict__)
 
             elif len(filter_bike_parking_location) == 1:

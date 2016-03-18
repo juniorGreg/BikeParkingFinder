@@ -16,6 +16,7 @@
             $("document").ready(function(){
 
                 var currentPosition = [45.5077, -73.544];
+                var accuracy = 8
 				var markers = new L.FeatureGroup();
 
 
@@ -46,12 +47,19 @@
                     
                     markers.addLayer(circle);
                     
+                    accuracy = position.coords.accuracy
+                    
                     $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition+"]", function( positions ) {
-
+					  
 					  $.each(positions, function( index, value ) {
 						  var marker = L.marker(value["coord"]).addTo(mymap)
-						   .bindPopup('Bike Parking<br><button class="removeBikeParking" id="'+value["id"]+'">Remove this parking</button>');
+						   .bindPopup('Bike Parking<br><button class="btn btn-default removeBikeParking" id="'+value["id"]+'">Remove this parking</button>');
 							markers.addLayer(marker);
+							
+						
+							
+						});
+
 					   });
                    });
                 }
@@ -81,7 +89,8 @@
                
                 mymap.on('dblclick', function(e) {	
 					var position = {'coords': {'latitude': e.latlng.lat,
-									  'longitude': e.latlng.lng}};	
+									  'longitude': e.latlng.lng,
+									  'accuracy': 8.0}};	
 					markers.clearLayers();
 					showPosition(position);
 				});
@@ -98,18 +107,23 @@
 					
 				});
 				
-				$("#addnew").click(function(){
-					$.getJSON( "/bike_parking/all_locations", function( positions ) {
-
-					  $.each(positions, function( index, value ) {
-						  var marker = L.marker(value["coord"]).addTo(mymap)
-						   .bindPopup('Bike Parking');
-							markers.addLayer(marker);
-					   });
+				$("#addNew").click(function(){
+					
+					var capacity = $("#capacity").val();
+					$.getJSON( "/bike_parking/add_bike_parking?coord=["+currentPosition+"]"+"&radius="+accuracy+"&capacity"+capacity, function( position ) {
+						alert(position);
+					
                    });
 					
 				});
-                
+				
+				
+                 $(".removeBikeParking").click(function(){
+				var id = $(this).attr('id');
+				$.getJSON( "/bike_parking/remove_bike_parking?id="+id, function( position ) {
+					alert(position);
+				
+			   });
                      
              
                 
@@ -126,8 +140,8 @@
               <a class="navbar-brand" href="#">BikeParkingMontreal</a>
             </div>
              <ul class="nav navbar-nav">			  
-			  <li><a href="#" id="showall">Show all parking</a></li>		
-			  <li><a href="#" id="addnew">Add new parking</a></li>			  	  
+			  <li><a href="#" id="showall">{{_("Show all parking")}}</a></li>		
+			  <li><a href="#" data-toggle="modal" data-target="#addBikeParkingModal" >Add new parking</a></li>			  	  
 			</ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -147,6 +161,34 @@
           <div id="mapid"></div>
 
         </div>
+        
+        <!--Add Bike Parking Modal -->
+		<div id="addBikeParkingModal" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Add new bike parking</h4>
+			  </div>
+			  <div class="modal-body">
+				<form role="form">
+					<div class="form-group">
+					<label for="capacity">Capacity: </label>
+					<input type="number" class="form-control" id="capacity" min="1" value="1">
+				  </div>
+				  <button type="submit" class="btn btn-default" id="addNew">Add</button>
+				</form>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			  </div>
+			</div>
+			
+		  </div>
+		</div>
+        
 
     </body>
 </html>
