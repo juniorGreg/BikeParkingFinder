@@ -2,6 +2,8 @@ from tornado.web import RequestHandler
 from tornado.web import StaticFileHandler
 from tornado.ioloop import IOLoop
 from tornado.web import Application
+from tornado import locale
+
 import couchdb
 import json
 import math
@@ -23,6 +25,7 @@ class BikeParking():
 def meter_to_deg(radius):
         return 360.0*radius/CIRC_EARTH
 
+
 def is_in_radius(coord_initial, coord, radius):
     radius_sqr = math.pow(radius, 2.0)
     distance_sqr = math.pow(coord[0]-coord_initial[0], 2.0)+math.pow(coord[1]-coord_initial[1], 2.0)
@@ -34,6 +37,8 @@ class BikeParkingQueryHandler(RequestHandler):
         couchdb.Resource.credentials =  ("supernovae", "Bonsai21")
         self.client = couchdb.Server("http://192.99.54.190:5984/")
         self.bike_parking_db = self.client["bike_parking"]
+
+
 
     def get(self, query):
         if query == "geolocation":
@@ -86,9 +91,8 @@ class BikeParkingQueryHandler(RequestHandler):
                 self.bike_parking_db.delete(_id)
             else:
                 bike_parking["status"] = status
-                self.bike_parking_db.update(bike_parking)
+                self.bike_parking_db.save(bike_parking)
 
-            self.bike_parking_db.update(bike_parking)
             self.write(json.dumps(bike_parking))
 
         elif query == "confirm_bike_parking":
@@ -107,17 +111,32 @@ class BikeParkingQueryHandler(RequestHandler):
 
 
 class MainHandler(RequestHandler):
+    def get_user_locale(self):
+        if not self.get_cookie("locale"):
+            self.set_cookie("locale", "fr")
+
+        return locale.get(self.get_cookie("locale"))
+
     def get(self, *args, **kwargs):
-        self.render("templates/index.html")
+        self.render("templates/index.html", version="0.4.0")
+
+
+class LocaleHandler(RequestHandler):
+
+    def get(self, lang):
+        self.set_cookie("locale", lang)
+        self.redirect("/")
 
 
 if __name__ == "__main__":
+    locale.load_gettext_translations('locale', 'fr')
     print "Bike Parking Mtl Server is started!"
 
     application = Application([
         (r"/", MainHandler),
         (r"/bike_parking/(.*)", BikeParkingQueryHandler),
+        (r"/locale/(fr|en)", LocaleHandler),
         (r"/resources/(.*)", StaticFileHandler, {"path": "resources"})
     ])
-    application.listen(8080)
+    application.listen(80)
     IOLoop.instance().start()

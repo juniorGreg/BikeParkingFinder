@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>Bike Parking Montreal</title>
         <link rel="stylesheet" href="resources/leaflet.css" />
         <script src="resources/leaflet.js"></script>
@@ -10,14 +11,21 @@
         <script src="resources/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="resources/style.css">
         <script src="resources/map_icons.js"></script>
+        <script src="resources/js.cookie.js"></script>
         <script>
 
 
             $("document").ready(function(){
 
                 var currentPosition = [45.5077, -73.544];
-                var accuracy = 8
+                var accuracy = 0.0;
 				var markers = new L.FeatureGroup();
+				
+				var locale = Cookies.get('locale');
+				if(locale == undefined)
+					locale = "fr";
+					
+				$("#"+locale).addClass("glyphicon glyphicon-ok");
 
 
                 function showPosition(position)
@@ -27,9 +35,11 @@
                         currentPosition = [position.coords.latitude, position.coords.longitude];
                     mymap.setView(currentPosition, 17)
                     var marker = L.marker(currentPosition, {icon: bikeIcon}).addTo(mymap)
-                        .bindPopup('Your position')
+                        .bindPopup('{{_("Your position")}}')
                         .openPopup();
-                        
+                       
+                       
+                    accuracy = position.coords.accuracy/2;
                     markers.addLayer(marker);
 
                     var circle = L.circle(currentPosition, 350, {
@@ -44,24 +54,39 @@
 						markers.clearLayers();
 						showPosition(position);
 					});
+					
+					markers.addLayer(circle);
+					
+					if(accuracy > 0.0)
+					{
+						var circleAcc = L.circle(currentPosition, accuracy, {
+							color: 'green',
+							fillColor: '#0f0s',
+							fillOpacity: 0.25
+						}).addTo(mymap);
+						
+						markers.addLayer(circleAcc);
+					}
                     
-                    markers.addLayer(circle);
-                    
-                    accuracy = position.coords.accuracy
                     
                     $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition+"]", function( positions ) {
 					  
 					  $.each(positions, function( index, value ) {
 						  var marker = L.marker(value["coord"]).addTo(mymap)
-						   .bindPopup('Bike Parking<br><button class="btn btn-default removeBikeParking" id="'+value["id"]+'">Remove this parking</button>');
+						   .bindPopup('{{_("Bike Parking")}}<br><button class="btn btn-default removeBikeParking" id="'+value["id"]+'">{{_("Remove this parking")}}</button>');
 							markers.addLayer(marker);
 							
-						
+							$(document).on("click", "#"+value["id"], function(){
+								var id = $(this).attr('id');
+								$.getJSON( "/bike_parking/remove_bike_parking?id="+id, function( position ) {
+									$(".leaflet-popup-close-button")[0].click();
+								
+								});
+							});
 							
 						});
 
-					   });
-                   });
+					   });                   
                 }
 
                 function getLocation() {
@@ -90,7 +115,7 @@
                 mymap.on('dblclick', function(e) {	
 					var position = {'coords': {'latitude': e.latlng.lat,
 									  'longitude': e.latlng.lng,
-									  'accuracy': 8.0}};	
+									  'accuracy': 0.0}};	
 					markers.clearLayers();
 					showPosition(position);
 				});
@@ -115,18 +140,7 @@
 					
                    });
 					
-				});
-				
-				
-                 $(".removeBikeParking").click(function(){
-				var id = $(this).attr('id');
-				$.getJSON( "/bike_parking/remove_bike_parking?id="+id, function( position ) {
-					alert(position);
-				
-			   });
-                     
-             
-                
+				});               
 
             });
 
@@ -137,20 +151,20 @@
          <nav class="navbar navbar-inverse">
           <div class="container-fluid">
             <div class="navbar-header">
-              <a class="navbar-brand" href="#">BikeParkingMontreal</a>
+              <a class="navbar-brand" href="#">BikeParkingMontreal v{{version}}</a>
             </div>
              <ul class="nav navbar-nav">			  
 			  <li><a href="#" id="showall">{{_("Show all parking")}}</a></li>		
-			  <li><a href="#" data-toggle="modal" data-target="#addBikeParkingModal" >Add new parking</a></li>			  	  
+			  <li><a href="#" data-toggle="modal" data-target="#addBikeParkingModal" >{{_("Add new parking")}}</a></li>			  	  
 			</ul>
 
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-leaf"></span> Langages
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-leaf"></span> {{_("Languages")}}
                   <span class="caret"></span> </a>
                   <ul class="dropdown-menu">
-                      <li><a href="#">English</a></li>
-                      <li><a href="#">Français</a></li>
+                      <li><a href="/locale/en"><span id="en"></span> English</a></li>
+                      <li><a href="/locale/fr"><span id="fr"></span> Français</a></li>
                   </ul>
               </li>
             </ul>
@@ -159,7 +173,6 @@
 
         <div class="container">
           <div id="mapid"></div>
-
         </div>
         
         <!--Add Bike Parking Modal -->
@@ -170,19 +183,19 @@
 			<div class="modal-content">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Add new bike parking</h4>
+				<h4 class="modal-title">{{_("Add new bike parking")}}</h4>
 			  </div>
 			  <div class="modal-body">
 				<form role="form">
 					<div class="form-group">
-					<label for="capacity">Capacity: </label>
+					<label for="capacity">{{_("Capacity:")}} </label>
 					<input type="number" class="form-control" id="capacity" min="1" value="1">
 				  </div>
-				  <button type="submit" class="btn btn-default" id="addNew">Add</button>
+				  <button type="submit" class="btn btn-default" id="addNew">{{_("Add")}}</button>
 				</form>
 			  </div>
 			  <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">{{_("Close")}}</button>
 			  </div>
 			</div>
 			
