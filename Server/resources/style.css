@@ -13,3 +13,14 @@ html, body{
     height:100%;
 }
 
+#ad{
+	position: fixed;
+	top: 95%;
+    left: 50%;
+	
+	margin-top: -50px; 
+	margin-left: -160px; 
+	z-index: 10;
+ 
+	}
+

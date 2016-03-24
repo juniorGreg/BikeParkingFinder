@@ -63,8 +63,21 @@ def test_get_capacity():
     assert capacity == 7
 
 
+def change_status_bike_parking(status, url, credentials=None):
+    server = couchdb.Server(url)
+    couchdb.Resource.credentials = credentials
+    bike_parking_db = server["bike_parking"]
+    for id in bike_parking_db:
+        doc = bike_parking_db.get(id)
+        if doc.has_key("status"):
+            doc["status"] = status
+            bike_parking_db.save(doc)
+
+
+
 if __name__ == "__main__":
     test_get_capacity()
     #bike_parking = parse_csv_file("support_velo_sigs.csv")
     #print bike_parking
     #add_to_database(bike_parking, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))
+    change_status_bike_parking(10, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))

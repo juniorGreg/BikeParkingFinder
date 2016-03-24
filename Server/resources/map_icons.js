@@ -10,3 +10,10 @@ var bikeIcon = L.icon({
     shadowAnchor: [35, 5]
     
 });
+
+var unconfirmIcon = L.icon({
+    iconUrl: 'resources/images/marker-icon_unconfirm.png',
+    iconRetinaUrl: 'resources/images/marker-icon-2x_unconfirm.png'   
+    
+});
+

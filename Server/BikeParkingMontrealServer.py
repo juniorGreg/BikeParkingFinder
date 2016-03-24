@@ -38,87 +38,137 @@ class BikeParkingQueryHandler(RequestHandler):
         self.client = couchdb.Server("http://192.99.54.190:5984/")
         self.bike_parking_db = self.client["bike_parking"]
 
+    def validate_bike_parking_modif(self, bike_parking):
+        last_update_str = bike_parking["last_update"]
+        last_update = datetime.datetime.strptime(last_update_str, "%Y-%m-%d %H:%M:%S.%f")
+        current_time = datetime.datetime.now()
+        bike_parking["last_update"] = str(current_time)
+        timespan = current_time - last_update
+        if timespan.total_seconds() > 60.0:
+            return True
+        return False
 
+    def get_geolocation_parking(self, coord, radius):
+        radius_deg = meter_to_deg(radius)
+        startkey = coord[0]-radius_deg
+        endkey = coord[0]+radius_deg
+
+        geolocation = self.bike_parking_db.view("bike_parking_query/geolocation", startkey=startkey, endkey=endkey)
+        bike_parking_location = map(lambda x: x.value, geolocation.rows)
+        filter_bike_parking_location = filter(lambda x: is_in_radius(coord, x["coord"], radius_deg), bike_parking_location)
+        return filter_bike_parking_location
+
+    def add_bike_parking(self, coord, radius, capacity):
+        if radius > 10.0:
+            return {"error": "accurancy_to_low"}
+
+        radius_deg = meter_to_deg(radius)
+        startkey = coord[0]-radius_deg
+        endkey = coord[0]+radius_deg
+
+        geolocation = self.bike_parking_db.view("bike_parking_query/geolocation", startkey=startkey, endkey=endkey)
+        bike_parking_location = map(lambda x: x.value, geolocation.rows)
+        filter_bike_parking_location = filter(lambda x: is_in_radius(coord, x["coord"], radius_deg), bike_parking_location)
+
+        if len(filter_bike_parking_location) == 0:
+            bike_parking = BikeParking()
+            bike_parking.latitude = coord[0]
+            bike_parking.longitude = coord[1]
+            bike_parking.capacity = capacity
+            bike_parking.status = 1
+            self.bike_parking_db.save(bike_parking.__dict__)
+            return bike_parking.__dict__
+
+        elif len(filter_bike_parking_location) == 1:
+            _id = filter_bike_parking_location[0]["id"]
+            bike_parking = self.bike_parking_db[_id]
+            status = bike_parking["status"]
+            if status < 10:
+                status += 1
+
+            if self.validate_bike_parking_modif(bike_parking):
+                bike_parking["status"] = status
+                self.bike_parking_db.save(bike_parking)
+                return bike_parking
+            else:
+                self.bike_parking_db.save(bike_parking)
+                return {"error": "already_count"}
+        else:
+            return {"error": "too_many_parking_range"}
+
+    def remove_bike_parking(self, _id):
+        bike_parking = self.bike_parking_db[_id]
+        status = bike_parking["status"]
+        status -= 1
+        response = {"status": status}
+        if self.validate_bike_parking_modif(bike_parking):
+            bike_parking["status"] = status
+            if status <= 0:
+                self.bike_parking_db.delete(bike_parking)
+                response = {"status": 0}
+            else:
+                self.bike_parking_db.save(bike_parking)
+        else:
+            response = {"error": "already_count"}
+            self.bike_parking_db.save(bike_parking)
+        return response
+
+    def confirm_bike_confirm(self, _id):
+        bike_parking = self.bike_parking_db[_id]
+        status = bike_parking["status"]
+
+        if status < 10:
+            status += 1
+
+        response = {"status": status}
+        if self.validate_bike_parking_modif(bike_parking):
+            bike_parking["status"] = status
+            response = {"status": bike_parking["status"]}
+        else:
+            response = {"error": "already_count"}
+
+        self.bike_parking_db.save(bike_parking)
+        return response
 
     def get(self, query):
         if query == "geolocation":
             coord = json.loads(self.get_argument("coord", "[45.5077, -73.544]"))
             radius = float(self.get_argument("radius", "350"))
-            radius_deg = meter_to_deg(radius)
-            startkey = coord[0]-radius_deg
-            endkey = coord[0]+radius_deg
-
-            geolocation = self.bike_parking_db.view("bike_parking_query/geolocation", startkey=startkey, endkey=endkey)
-            bike_parking_location = map(lambda x: x.value, geolocation.rows)
-            filter_bike_parking_location = filter(lambda x: is_in_radius(coord, x["coord"], radius_deg), bike_parking_location)
-            self.write(json.dumps(filter_bike_parking_location))
+            self.write(json.dumps(self.get_geolocation_parking(coord, radius)))
 
         elif query == "add_bike_parking":
             coord = json.loads(self.get_argument("coord"))
-            radius = float(self.get_argument("radius", "8.0"))
+            radius = float(self.get_argument("radius"))
             capacity = int(self.get_argument("capacity", "1"))
-            radius_deg = meter_to_deg(radius)
-            startkey = coord[0]-radius_deg
-            endkey = coord[0]+radius_deg
-
-            geolocation = self.bike_parking_db.view("bike_parking_query/geolocation", startkey=startkey, endkey=endkey)
-            bike_parking_location = map(lambda x: x.value, geolocation.rows)
-            filter_bike_parking_location = filter(lambda x: is_in_radius(coord, x["coord"], radius_deg), bike_parking_location)
-            if len(filter_bike_parking_location) == 0:
-                bike_parking = BikeParking()
-                bike_parking.latitude = coord[0]
-                bike_parking.longitude = coord[1]
-                bike_parking.capacity = capacity
-                bike_parking.status = 1
-                self.bike_parking_db.save(bike_parking.__dict__)
-
-            elif len(filter_bike_parking_location) == 1:
-                bike_parking = filter_bike_parking_location[0]
-                status = bike_parking["status"]
-                if status < 100:
-                    status += 1
-                    bike_parking["status"] = status
-                    self.bike_parking_db.update(bike_parking)
+            self.write(json.dumps(self.add_bike_parking(coord, radius, capacity)))
 
         elif query == "remove_bike_parking":
             _id = self.get_argument("id")
-
-            bike_parking = self.bike_parking_db.get(_id)
-            status = bike_parking["status"]
-            status -= 1
-
-            if status <= 0:
-                self.bike_parking_db.delete(_id)
-            else:
-                bike_parking["status"] = status
-                self.bike_parking_db.save(bike_parking)
-
-            self.write(json.dumps(bike_parking))
+            self.write(json.dumps(self.remove_bike_parking(_id)))
 
         elif query == "confirm_bike_parking":
             _id = self.get_argument("id")
-
-            bike_parking = self.bike_parking_db.get(_id)
-            bike_parking["status"] += 1
-
-            self.bike_parking_db.update(bike_parking)
-            self.write(json.dumps(bike_parking))
+            self.write(json.dumps(self.confirm_bike_confirm(_id)))
 
         elif query == "all_locations":
             geolocation = self.bike_parking_db.view("bike_parking_query/geolocation")
             bike_parking_location = map(lambda x: x.value, geolocation.rows)
             self.write(json.dumps(bike_parking_location))
 
+        else:
+            return json.dumps({"error": "query_invalid"})
+
 
 class MainHandler(RequestHandler):
     def get_user_locale(self):
         if not self.get_cookie("locale"):
             self.set_cookie("locale", "fr")
+            return locale.get("fr")
 
         return locale.get(self.get_cookie("locale"))
 
     def get(self, *args, **kwargs):
-        self.render("templates/index.html", version="0.4.0")
+        self.render("templates/index.html", version="0.5")
 
 
 class LocaleHandler(RequestHandler):
