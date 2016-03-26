@@ -80,7 +80,7 @@ class BikeParkingQueryHandler(RequestHandler):
             return bike_parking.__dict__
 
         elif len(filter_bike_parking_location) == 1:
-            _id = filter_bike_parking_location[0]["id"]
+            _id = filter_bike_parking_location[0]["_id"]
             bike_parking = self.bike_parking_db[_id]
             status = bike_parking["status"]
             if status < 10:
@@ -168,7 +168,7 @@ class MainHandler(RequestHandler):
         return locale.get(self.get_cookie("locale"))
 
     def get(self, *args, **kwargs):
-        self.render("templates/index.html", version="0.5")
+        self.render("templates/index.html", version="0.6")
 
 
 class LocaleHandler(RequestHandler):
