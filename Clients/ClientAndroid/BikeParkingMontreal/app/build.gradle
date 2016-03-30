@@ -8,7 +8,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 19
         versionCode 1
-        versionName "1.0"
+        versionName "0.2"
     }
     buildTypes {
         release {
@@ -29,4 +29,15 @@ dependencies {
 dependencies {
     compile 'org.osmdroid:osmdroid-android:5.1@aar'
     //Note as of 5.0, this is no longer needed!  compile 'org.slf4j:slf4j-simple:1.6.1'
+}
+
+dependencies {
+    compile project(':OSMBonusPack-master')
+    //Note as of 5.0, this is no longer needed!  compile 'org.slf4j:slf4j-simple:1.6.1'
+}
+dependencies {
+    compile 'com.android.support:support-v4:19.+'
+}
+dependencies {
+    compile 'com.android.support:support-v4:19.+'
 }

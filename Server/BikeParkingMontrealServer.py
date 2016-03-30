@@ -59,8 +59,8 @@ class BikeParkingQueryHandler(RequestHandler):
         return filter_bike_parking_location
 
     def add_bike_parking(self, coord, radius, capacity):
-        if radius > 10.0:
-            return {"error": "accurancy_to_low"}
+        if radius > 15.0:
+            return {"error": "accuracy_to_low"}
 
         radius_deg = meter_to_deg(radius)
         startkey = coord[0]-radius_deg
@@ -119,6 +119,8 @@ class BikeParkingQueryHandler(RequestHandler):
 
         if status < 10:
             status += 1
+        else:
+            return {"status": 10}
 
         response = {"status": status}
         if self.validate_bike_parking_modif(bike_parking):
@@ -157,6 +159,9 @@ class BikeParkingQueryHandler(RequestHandler):
 
         else:
             return json.dumps({"error": "query_invalid"})
+
+    def post(self, *args, **kwargs):
+        pass
 
 
 class MainHandler(RequestHandler):
