@@ -15,7 +15,7 @@ html, body{
 
 #ad{
 	position: fixed;
-	top: 95%;
+	top: 95vh;
     left: 50%;
 	
 	margin-top: -110px;

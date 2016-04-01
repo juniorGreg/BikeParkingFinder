@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="resources/style.css">
         <script src="resources/map_icons.js"></script>
         <script src="resources/js.cookie.js"></script>
+        <link rel="icon" href="resources/images/bike_icon.png">
        
         <script>
 
@@ -82,7 +83,8 @@
 							
 							$(document).on("click", "#"+value["id"], function(){
 								var id = $(this).attr('id');
-								$.getJSON( "/bike_parking/remove_bike_parking?id="+id, function( position ) {
+								formData = "id="+id;
+								$.post( "/bike_parking/remove_bike_parking", formData, function( position ) {
 									$(".leaflet-popup-close-button")[0].click();
 								
 								});
@@ -139,13 +141,20 @@
 				$("#addNew").click(function(){
 					
 					var capacity = $("#capacity").val();
-					$.getJSON( "/bike_parking/add_bike_parking?coord=["+currentPosition+"]"+"&radius="+accuracy+"&capacity"+capacity, function( position ) {
-						alert(position);
+					formData = "coord="+currentPosition+"&radius="+accuracy+"&capacity="+capacity;
 					
-                   });
-					
-				});               
-
+					$.post("/bike_parking/add_bike_parking", formData).done(
+						function(data){
+							var obj = jQuery.parseJSON(data);
+						}
+					);
+						
+					 $('#addBikeParkingModal').modal('hide');
+				});    
+				
+				$("form").on("submit", function (e) {
+				e.preventDefault();  
+				});
             });
 
         </script>
@@ -161,7 +170,8 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>                        
 			  </button>
-              <a class="navbar-brand" href="#">BikeParkingMontreal v{{version}}</a>
+			  
+              <a class="navbar-brand" href="#"> <img src="resources/images/bike_icon.png" width="24px" style="float: left; padding-right: 5px;"/>BikeParkingMontreal v{{version}}</a>
             </div>
             
             <div class="collapse navbar-collapse" id="myNavbar">

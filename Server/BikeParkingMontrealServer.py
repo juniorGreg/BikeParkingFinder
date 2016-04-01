@@ -138,20 +138,6 @@ class BikeParkingQueryHandler(RequestHandler):
             radius = float(self.get_argument("radius", "350"))
             self.write(json.dumps(self.get_geolocation_parking(coord, radius)))
 
-        elif query == "add_bike_parking":
-            coord = json.loads(self.get_argument("coord"))
-            radius = float(self.get_argument("radius"))
-            capacity = int(self.get_argument("capacity", "1"))
-            self.write(json.dumps(self.add_bike_parking(coord, radius, capacity)))
-
-        elif query == "remove_bike_parking":
-            _id = self.get_argument("id")
-            self.write(json.dumps(self.remove_bike_parking(_id)))
-
-        elif query == "confirm_bike_parking":
-            _id = self.get_argument("id")
-            self.write(json.dumps(self.confirm_bike_confirm(_id)))
-
         elif query == "all_locations":
             geolocation = self.bike_parking_db.view("bike_parking_query/geolocation")
             bike_parking_location = map(lambda x: x.value, geolocation.rows)
@@ -160,8 +146,21 @@ class BikeParkingQueryHandler(RequestHandler):
         else:
             return json.dumps({"error": "query_invalid"})
 
-    def post(self, *args, **kwargs):
-        pass
+    def post(self, query,  **kwargs):
+        if query == "add_bike_parking":
+            raw_coord = self.request.arguments["coord"][0].split(",")
+            coord = map(lambda x: float(x), raw_coord)
+            radius = float(self.request.arguments["radius"][0])
+            capacity = int(self.request.arguments["capacity"][0])
+            self.write(json.dumps(self.add_bike_parking(coord, radius, capacity)))
+
+        elif query == "remove_bike_parking":
+            _id = self.request.arguments["id"][0]
+            self.write(json.dumps(self.remove_bike_parking(_id)))
+
+        elif query == "confirm_bike_parking":
+            _id = self.request.arguments["id"][0]
+            self.write(json.dumps(self.confirm_bike_confirm(_id)))
 
 
 class MainHandler(RequestHandler):
