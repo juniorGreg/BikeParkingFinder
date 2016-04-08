@@ -1,26 +1,31 @@
-#mapid { height: 100%; }
+@media only screen and (min-width:800px)and (max-width:3000px) {
+    #topbanner {
+        width: 640px;
+        height: 90px;
+    }
+}
+
+#mapid { height: 89%; }
 
 .container{
     margin : 0;
     padding:0;
     //margin-top: -1.5vh;
     width: 100%;
-    height: 90%;
+    height: 100%;
 }
 .navbar{margin-bottom:0;}
 
 html, body{
+	width: 100%;
     height:100%;
 }
 
 #ad{
-	position: fixed;
-	top: 95vh;
-    left: 50%;
-	
-	margin-top: -110px;
-	margin-left: -160px; 
-	z-index: 10;
+		width: 100%;
+		height: 10vh;
+		position:fixed;
+		top: 84vh;
  
 	}
 

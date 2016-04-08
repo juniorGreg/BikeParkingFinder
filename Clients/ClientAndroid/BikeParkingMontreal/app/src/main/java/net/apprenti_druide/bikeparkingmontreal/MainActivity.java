@@ -140,8 +140,8 @@ public class MainActivity extends Activity implements LocationListener, AddBikeP
                 locationManager.getLastKnownLocation(networkLocationProvider);
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, this);
 
 
         if(lastKnownLocation_byGps!=null) {

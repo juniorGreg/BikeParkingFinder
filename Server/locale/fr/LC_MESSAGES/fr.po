@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-20 16:02-0400\n"
-"PO-Revision-Date: 2016-03-20 16:02-0400\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2016-04-07 22:35-0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_CA\n"
@@ -18,42 +18,71 @@ msgstr ""
 "X-Generator: Poedit 1.8.4\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/index.html:137
-msgid "Show all parking"
-msgstr "Voir tous les stationnements"
+msgid "Your location accuracy is too low."
+msgstr "La précision de votre position est trop basse."
 
-#: templates/index.html:138
-msgid "Add new parking"
-msgstr "Ajouter un nouveau  stationnement"
+msgid "This parking already has been added."
+msgstr "Ce stationnement a déjà été ajouté"
 
-#: templates/index.html:143
-msgid "Languages"
-msgstr "Langages"
+msgid "Parking Added"
+msgstr "Stationnement ajouté"
 
-#: templates/index.html:166
-msgid "Add new bike parking"
-msgstr "Ajouter un nouveau stationnement"
-
-#: templates/index.html:171
-msgid "Capacity:"
-msgstr "Capacité :"
-
-#: templates/index.html:174
-msgid "Add"
-msgstr "Ajouter"
-
-#: templates/index.html:178
 msgid "Close"
 msgstr "Fermer"
 
-msgid "Your position"
-msgstr "Votre position"
+msgid "Unconfirmed"
+msgstr "Non confirmé"
+
+msgid "Show all parking"
+msgstr "Voir tous les stationnements"
+
+msgid "Confirmed"
+msgstr "Confirmé"
+
+msgid "Languages"
+msgstr "Langages"
+
+msgid "Gps accuracy"
+msgstr "Précision du Gps"
+
+msgid "Add new parking"
+msgstr "Ajouter un nouveau  stationnement"
+
+msgid "A modifying request already has been triggered."
+msgstr "Une requête de modification a déjà été déclanché."
 
 msgid "Bike Parking"
 msgstr "stationnement"
 
-msgid "Remove this parking"
-msgstr "Enlever ce stationnement"
+msgid "Modify bike parking"
+msgstr "Modifier un stationnement"
 
-msgid "Gps accuracy"
-msgstr "Précision du Gps"
+msgid "Add new bike parking"
+msgstr "Ajouter un nouveau stationnement"
+
+msgid "Parking Modified"
+msgstr "Stationnement modifié"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "There are others parking in your location range."
+msgstr "Il y a d'autres stationnements dans la portée de votre position."
+
+msgid "Confirm it"
+msgstr "Confirmez-le"
+
+msgid "Modify this parking"
+msgstr "Modifier ce stationnement"
+
+msgid "Remove it"
+msgstr "Enlevez-le"
+
+msgid "Your position"
+msgstr "Votre position"
+
+#~ msgid "Capacity:"
+#~ msgstr "Capacité :"
+
+#~ msgid "Remove this parking"
+#~ msgstr "Enlever ce stationnement"

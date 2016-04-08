@@ -109,7 +109,7 @@ class BikeParkingQueryHandler(RequestHandler):
             else:
                 self.bike_parking_db.save(bike_parking)
         else:
-            response = {"error": "already_count"}
+            response = {"error": "already_remove"}
             self.bike_parking_db.save(bike_parking)
         return response
 
@@ -127,7 +127,7 @@ class BikeParkingQueryHandler(RequestHandler):
             bike_parking["status"] = status
             response = {"status": bike_parking["status"]}
         else:
-            response = {"error": "already_count"}
+            response = {"error": "already_confirm"}
 
         self.bike_parking_db.save(bike_parking)
         return response
@@ -172,7 +172,7 @@ class MainHandler(RequestHandler):
         return locale.get(self.get_cookie("locale"))
 
     def get(self, *args, **kwargs):
-        self.render("templates/index.html", version="0.6")
+        self.render("templates/index.html", version="0.7")
 
 
 class LocaleHandler(RequestHandler):
@@ -192,5 +192,5 @@ if __name__ == "__main__":
         (r"/locale/(fr|en)", LocaleHandler),
         (r"/resources/(.*)", StaticFileHandler, {"path": "resources"})
     ])
-    application.listen(80)
+    application.listen(8080)
     IOLoop.instance().start()

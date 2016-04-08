@@ -77,7 +77,7 @@ def change_status_bike_parking(status, url, credentials=None):
 
 if __name__ == "__main__":
     test_get_capacity()
-    #bike_parking = parse_csv_file("support_velo_sigs.csv")
+    bike_parking = parse_csv_file("support_velo_sigs.csv")
     #print bike_parking
     #add_to_database(bike_parking, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))
-    change_status_bike_parking(10, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))
+    #change_status_bike_parking(10, "http://192.99.54.190:5984/", ("supernovae", "Bonsai21"))

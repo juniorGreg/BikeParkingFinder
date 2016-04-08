@@ -30,7 +30,7 @@ public class ServerRestfulCall extends AsyncTask<Void, Void, JSONArray> {
         REMOVE_BIKE_PARKING("confirm_bike_parking?id=%s");
 
         private String url = "";
-        private final String domain = "http://192.168.1.114/bike_parking/";
+        private final String domain = "http://bike.apprenti-druide.net/bike_parking/";
 
         //Constructeur
 
