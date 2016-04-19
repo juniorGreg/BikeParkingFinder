@@ -3,6 +3,7 @@ from tornado.web import StaticFileHandler
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 from tornado import locale
+from visualcaptchatornado import VisualCaptchaRequestHanlder
 
 import couchdb
 import json
@@ -32,7 +33,7 @@ def is_in_radius(coord_initial, coord, radius):
     return radius_sqr > distance_sqr
 
 
-class BikeParkingQueryHandler(RequestHandler):
+class BikeParkingQueryHandler(VisualCaptchaRequestHanlder):
     def initialize(self):
         couchdb.Resource.credentials =  ("supernovae", "Bonsai21")
         self.client = couchdb.Server("http://192.99.54.190:5984/")
@@ -132,7 +133,7 @@ class BikeParkingQueryHandler(RequestHandler):
         self.bike_parking_db.save(bike_parking)
         return response
 
-    def get(self, query):
+    def get(self, query, arg=None):
         if query == "geolocation":
             coord = json.loads(self.get_argument("coord", "[45.5077, -73.544]"))
             radius = float(self.get_argument("radius", "350"))
@@ -144,9 +145,13 @@ class BikeParkingQueryHandler(RequestHandler):
             self.write(json.dumps(bike_parking_location))
 
         else:
-            return json.dumps({"error": "query_invalid"})
+            VisualCaptchaRequestHanlder.get(self, query, arg)
 
     def post(self, query,  **kwargs):
+        if not self.trySubmission():
+            self.write(json.dumps({"error": "captcha_invalid"}))
+            return
+
         if query == "add_bike_parking":
             raw_coord = self.request.arguments["coord"][0].split(",")
             coord = map(lambda x: float(x), raw_coord)
@@ -186,11 +191,24 @@ if __name__ == "__main__":
     locale.load_gettext_translations('locale', 'fr')
     print "Bike Parking Mtl Server is started!"
 
+    settings = dict(
+        debug = True,
+    )
+    session_settings = dict(
+        driver="memory",
+        driver_settings=dict(
+            host = "okidoo",
+        ),
+        force_persistence = True,
+    )
+    settings.update(session=session_settings)
+
     application = Application([
         (r"/", MainHandler),
-        (r"/bike_parking/(.*)", BikeParkingQueryHandler),
+        (r"/bike_parking/([a-z_]+)", BikeParkingQueryHandler),
+        (r"/bike_parking/(start|image)/(.*)", BikeParkingQueryHandler),
         (r"/locale/(fr|en)", LocaleHandler),
         (r"/resources/(.*)", StaticFileHandler, {"path": "resources"})
-    ])
+    ], settings)
     application.listen(8080)
     IOLoop.instance().start()
