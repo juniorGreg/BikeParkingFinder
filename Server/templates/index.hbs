@@ -136,19 +136,21 @@
     					}
 
 
-              $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition+"]", function( positions ) {
+              $.getJSON( "/bike_parking/geolocation?coord=["+currentPosition[1]+","+currentPosition[0]+"]", function( positions ) {
 
         					  $.each(positions, function( index, value ) {
         						  var status = value["status"];
         						  var status_marker;
         						  var status_text = "Confirmed"
+                      var location = [value["location"][1], value["location"][0]];
+
         						  if(status < 10)
         						  {
-        							 status_marker = L.marker(value["coord"], {icon: unconfirmIcon });
+        							 status_marker = L.marker(location, {icon: unconfirmIcon });
         							 var status_text = "Unconfirmed"
         						  }
         						  else
-        						      status_marker = L.marker(value["coord"]);
+        						      status_marker = L.marker(location);
 
         						  var marker = status_marker.addTo(mymap)
         						   .bindPopup( '"Bike Parking"<br>Status: '+status_text+'<br><button class="btn btn-default btn-sm modifyBikeParking"  id="'+value["id"]+'">"Modify this parking"</button>');
@@ -188,13 +190,13 @@
         getLocation();
 
 
-        mymap.on('dblclick', updateMapPosition);
+        mymap.on('click', updateMapPosition);
 
 				$("#showall").click(function(){
 					$.getJSON( "/bike_parking/all_locations", function( positions ) {
 
 					  $.each(positions, function( index, value ) {
-						  var marker = L.marker(value["coord"]).addTo(mymap)
+						  var marker = L.marker(value["location"]).addTo(mymap)
 						   .bindPopup('Bike Parking');
 							markers.addLayer(marker);
 					   });

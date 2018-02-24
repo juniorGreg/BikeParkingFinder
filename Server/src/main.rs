@@ -6,7 +6,17 @@ extern crate router;
 extern crate handlebars_iron as hbs;
 
 extern crate serde;
+
+#[macro_use]
 extern crate serde_json;
+
+
+extern crate elastic_reqwest as cli;
+extern crate elastic_types;
+#[macro_use]
+extern crate elastic_types_derive;
+
+extern crate reqwest;
 
 #[macro_use]
 extern crate serde_derive;
@@ -37,28 +47,26 @@ use std::fmt::format;
 use serde_json::value::Map;
 use serde_json::Error;
 
+use std::io::Read;
 
-const CIRC_EARTH: f32 = 40075016.68557849;
+use cli::{ElasticClient, ParseResponse, RequestParams};
+use cli::req::{IndicesCreateRequest, IndexRequest, SearchRequest};
+use cli::res::{parse, CommandResponse, IndexResponse, SearchResponseOf, Hit};
 
-fn meter_to_deg(radius: f32) -> f32 {
-    360.0*radius/CIRC_EARTH
-}
+use elastic_types::prelude::*;
+use elastic_types::date::*;
 
-fn is_in_radius(coord_initial: &Vec<f32>, coord: &Vec<f32>, radius: f32) -> bool{
-    let radius_sqr = radius.powf(2.0);
-    let distance_sqr = (coord[0]-coord_initial[0]).powf(2.0) + (coord[1]-coord_initial[1]).powf(2.0);
-    radius_sqr > distance_sqr
-}
 
-//#[derive(Serialize, Deserialize)]
-struct BikeParking {
-    latitude: f32,
-    longitude: f32,
-    capacity: i32,
-    status: i32,
-    idd: i32,
-    added: String,
-    last_update: String,
+#[derive(Clone, Debug, Serialize, Deserialize, ElasticType)]
+pub struct BikeParking {
+    pub location: GeoPoint<DefaultGeoPointMapping>,
+    pub capacity: i32,
+    pub status: i32,
+    pub id: String,
+    pub added: Date<DefaultDateMapping<EpochMillis>>,
+    pub last_update: Date<DefaultDateMapping<EpochMillis>>,
+    pub comment: String,
+    pub availability_stats: i32
 }
 
 
@@ -71,24 +79,62 @@ impl Handler for BikeParkingHandler{
         let ref query = req.extensions.get::<Router>().unwrap().find("query").unwrap();
 
 
-        match Some(&*query.to_string()) {
-            Some("geolocation") => self.get_geolocation_parking(&params),
-            Some("all_locations") => println!("toute"),
-            _ => println!("Invalid query",)
-        }
+        let response = match Some(&*query.to_string()) {
+            Some("geolocation") => self.get_geolocation_parking(&params).to_string(),
+            Some("all_locations") => String::from("[]"),
+            _ => String::from("[]")
+        };
 
-        println!("{}", query);
-        Ok(Response::with((status::Ok, "oki")))
+
+        Ok(Response::with((status::Ok, response)))
     }
 }
 
 impl BikeParkingHandler{
-    fn get_geolocation_parking(&self, params: &params::Map){
+    fn get_geolocation_parking(&self, params: &params::Map) -> String{
 
-        let coord_str = params.find(&["coord"]).unwrap();
+        let map = params.to_strict_map::<String>().unwrap();
+        let default_radius = String::from("350");
+        let mut response_str = String::new();
 
-        let coord = serde_json::from_str(coord_str.from_value().unwrap()).unwrap();
-        println!("{:?}", coord);
+        if let Some(coord_str) = map.get("coord")
+        {
+            let radius = map.get("radius").unwrap_or(&default_radius);
+            let coord: Vec<f32> = serde_json::from_str(&coord_str).unwrap();
+            let query = json!({
+                        "query": {
+                            "bool" : {
+                                "must" : {
+                                    "match_all" : {}
+                                },
+                                "filter" : {
+                                    "geo_distance" : {
+                                        "distance" : format!("{}m", radius),
+                                        "location" : coord
+                                    }
+                                }
+                            }
+                        }
+                    });
+            let (client, params_cli) = cli::default().unwrap();
+
+            let search = {
+                SearchRequest::for_index_ty("bike", "parking", query.to_string())
+            };
+
+            let http_res = client.elastic_req(&params_cli, search).unwrap();
+
+            let res = parse::<SearchResponseOf<Hit<BikeParking>>>().from_response(http_res).unwrap();
+
+            let bike_parkings:Vec<BikeParking> = res.hits().into_iter().map(|hit| hit.source.clone().unwrap()).collect();
+
+            response_str = serde_json::to_string(&bike_parkings).unwrap();
+        }else
+        {
+            response_str.push_str("[]");
+        }
+
+        response_str
     }
 }
 
