@@ -1,3 +1,4 @@
+
 extern crate iron;
 extern crate time;
 extern crate mount;
@@ -5,21 +6,18 @@ extern crate staticfile;
 extern crate router;
 extern crate handlebars_iron as hbs;
 
-extern crate serde;
 
+
+#[macro_use]
+extern crate elastic_derive;
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde;
 #[macro_use]
 extern crate serde_json;
 
-
-extern crate elastic_reqwest as cli;
-extern crate elastic_types;
-#[macro_use]
-extern crate elastic_types_derive;
-
-extern crate reqwest;
-
-#[macro_use]
-extern crate serde_derive;
+extern crate elastic;
 
 extern crate params;
 
@@ -49,15 +47,11 @@ use serde_json::Error;
 
 use std::io::Read;
 
-use cli::{ElasticClient, ParseResponse, RequestParams};
-use cli::req::{IndicesCreateRequest, IndexRequest, SearchRequest};
-use cli::res::{parse, CommandResponse, IndexResponse, SearchResponseOf, Hit};
-
-use elastic_types::prelude::*;
-use elastic_types::date::*;
+use elastic::prelude::*;
+use elastic::types::*;
 
 
-#[derive(Clone, Debug, Serialize, Deserialize, ElasticType)]
+#[derive(ElasticType, Serialize, Deserialize)]
 pub struct BikeParking {
     pub location: GeoPoint<DefaultGeoPointMapping>,
     pub capacity: i32,
@@ -116,17 +110,13 @@ impl BikeParkingHandler{
                             }
                         }
                     });
-            let (client, params_cli) = cli::default().unwrap();
 
-            let search = {
-                SearchRequest::for_index_ty("bike", "parking", query.to_string())
-            };
+            let client = SyncClientBuilder::new().build().unwrap();
 
-            let http_res = client.elastic_req(&params_cli, search).unwrap();
+            let res = client.search::<BikeParking>().index("_all").body(query.to_string()).send().unwrap();
 
-            let res = parse::<SearchResponseOf<Hit<BikeParking>>>().from_response(http_res).unwrap();
 
-            let bike_parkings:Vec<BikeParking> = res.hits().into_iter().map(|hit| hit.source.clone().unwrap()).collect();
+            let bike_parkings:Vec<BikeParking> = res.into_hits().into_iter().map(|hit| hit.into_document().unwrap()).collect();
 
             response_str = serde_json::to_string(&bike_parkings).unwrap();
         }else
