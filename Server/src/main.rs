@@ -1,11 +1,11 @@
 
-extern crate iron;
+#[macro_use] extern crate iron;
 extern crate time;
 extern crate mount;
 extern crate staticfile;
 extern crate router;
 extern crate handlebars_iron as hbs;
-
+extern crate iron_sessionstorage;
 
 
 #[macro_use]
@@ -50,6 +50,12 @@ use std::io::Read;
 use elastic::prelude::*;
 use elastic::types::*;
 
+use iron_sessionstorage::traits::*;
+use iron_sessionstorage::SessionStorage;
+use iron_sessionstorage::backends::SignedCookieBackend;
+
+mod visualCaptcha;
+
 
 #[derive(ElasticType, Serialize, Deserialize)]
 pub struct BikeParking {
@@ -72,6 +78,7 @@ impl Handler for BikeParkingHandler{
         let params = req.get::<Params>().unwrap();
         let ref query = req.extensions.get::<Router>().unwrap().find("query").unwrap();
 
+        println!("{:?}", query);
 
         let response = match Some(&*query.to_string()) {
             Some("geolocation") => self.get_geolocation_parking(&params).to_string(),
@@ -174,20 +181,25 @@ fn main() {
 
     let bike_parking_handler = BikeParkingHandler{};
 
+    let visual_captcha = visualCaptcha::Captcha{};
+
     //Routing
     let mut router = Router::new();
     router.get("/", index, "index");
     router.get("/locale/:lang", locale, "locale");
     router.get("/bike_parking/:query", bike_parking_handler, "bike_parking");
-    //router.get("/bike_parking/:query/:sub_query", bike_parking_handler.clone(), "bike_parking");
+    router.get("/bike_parking/visualcaptcha/:query/*count", visual_captcha, "visual_captcha");
 
     //Create static file mounting
     let mut mount = Mount::new();
     mount.mount("/resources/", Static::new(Path::new("./resources/")));
     mount.mount("/",router);
 
+    let my_secret = b"verysecret".to_vec();
     let mut chain = Chain::new(mount);
+    chain.link_around(SessionStorage::new(SignedCookieBackend::new(my_secret)));
     chain.link_after(hbse);
+
 
     Iron::new(chain).http("localhost:3000").unwrap();
 }

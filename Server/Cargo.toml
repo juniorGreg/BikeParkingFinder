@@ -11,6 +11,7 @@ serde_json = "*"
 serde_derive = "*"
 #mime = "*"
 iron = "*"
+iron-sessionstorage = {git = "https://github.com/iron/iron-sessionstorage.git"}
 handlebars-iron = "*"
 router = "*"
 #rand = "*"
