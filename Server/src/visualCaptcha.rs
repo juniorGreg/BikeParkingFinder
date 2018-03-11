@@ -4,9 +4,11 @@ use iron::{status, Url, Handler};
 use params::{Params, Value};
 
 
+struct Session{
+
+}
+
 pub struct Captcha;
-
-
 
 impl Handler for Captcha{
     fn handle(&self, req: &mut Request) -> IronResult<Response> {

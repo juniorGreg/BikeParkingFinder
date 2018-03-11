@@ -137,10 +137,13 @@ impl BikeParkingHandler{
 
 
 fn index(_: &mut Request) -> IronResult<Response> {
+
     let mut resp = Response::new();
     let mut data = Map::new();
     data.insert("version".to_string(), to_json(&"0.1".to_owned()));
     resp.set_mut(Template::new("index", data)).set_mut(status::Ok);
+
+    println!("{:?}", resp);
 
     Ok(resp)
 }
@@ -192,14 +195,15 @@ fn main() {
 
     //Create static file mounting
     let mut mount = Mount::new();
-    mount.mount("/resources/", Static::new(Path::new("./resources/")));
     mount.mount("/",router);
+    mount.mount("/resources/", Static::new(Path::new("./resources/")));
+    
 
     let my_secret = b"verysecret".to_vec();
     let mut chain = Chain::new(mount);
     chain.link_around(SessionStorage::new(SignedCookieBackend::new(my_secret)));
     chain.link_after(hbse);
 
-
+    println!("oki");
     Iron::new(chain).http("localhost:3000").unwrap();
 }
