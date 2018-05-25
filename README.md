@@ -57,7 +57,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 ```javascript
 {
   latitude: 45.00000, //required
-  longitude: 76.00000, //required
+  longitude: -76.00000, //required
   name: "default name", //default value
   description: "", //optional
   capacity: 1, //default value
@@ -71,7 +71,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
  {
    id: '52eecfaa-617d-4470-923f-381902f9e31b' //a unique id will be create
    latitude: 45.00000,
-   longitude: 76.00000,
+   longitude: -76.00000,
    name: "default name",
    description: "",
    capacity: 1,
@@ -96,7 +96,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
  {
    id: ':id'
    latitude: 45.00000,
-   longitude: 76.00000,
+   longitude: -76.00000,
    name: "default name",
    description: "",
    capacity: 1,
