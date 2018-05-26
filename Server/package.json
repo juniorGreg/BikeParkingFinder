@@ -10,9 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
-    "qunit": "^2.6.1"
+    "bulma": "^0.7.1",
+    "qunit": "^2.6.1",
+    "vue": "^2.5.16",
+    "vue2-leaflet": "^1.0.2"
   },
   "devDependencies": {
-    "browserify-css": "^0.14.0"
+    "browserify-css": "^0.14.0",
+    "vueify": "^9.4.1"
+  },
+  "browser": {
+    "vue": "vue/dist/vue.common.js"
   }
 }

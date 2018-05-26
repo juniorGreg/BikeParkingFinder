@@ -1,0 +1,4 @@
+Server/node_modules/*
+Server/target/*
+*.lock
+package-lock.json

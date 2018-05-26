@@ -1,0 +1,16 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>BikeParkingFinder</title>
+
+<body>
+  <div id="app">
+    <l-map ref="map" :zoom=13 :center="[47.413220, -1.219482]">
+      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+      <l-marker :lat-lng="marker"></l-marker>
+   </l-map>
+  </div>
+  <script src="resources/index.js"></script>
+</body>
+</html>
