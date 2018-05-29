@@ -1,11 +1,32 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
-
+#![feature(custom_derive)]
 
 extern crate rocket;
+extern crate api;
 
 use rocket::response::NamedFile;
+
+
 use std::path::{Path, PathBuf};
+
+
+#[derive(FromForm)]
+struct BikeParkingQuery{
+    latitude: f32,
+    longitude: f32,
+    radius: Option<i32>,
+    count: Option<i32>
+}
+
+#[get("/api/bike_parking?<query>")]
+fn get_bike_parking(query: Option<BikeParkingQuery>) ->  String{
+    match query{
+        Some(q) => api::get_bike_parking(q.latitude, q.longitude, q.radius, q.count),
+        None => String::from("error")
+    }
+
+}
 
 #[get("/resources/<file..>")]
 fn resources(file: PathBuf) -> Option<NamedFile> {
@@ -13,7 +34,7 @@ fn resources(file: PathBuf) -> Option<NamedFile> {
 }
 
 #[get("/tests")]
-fn apiTests() -> Option<NamedFile>{
+fn api_tests() -> Option<NamedFile>{
     NamedFile::open(Path::new("html/tests.html")).ok()
 }
 
@@ -24,6 +45,6 @@ fn index() -> Option<NamedFile> {
 
 fn main() {
     println!("Bike Parking Finder Server v{} is started", "0.1");
-    rocket::ignite().mount("/", routes![index, apiTests, resources]).launch();
+    rocket::ignite().mount("/", routes![index, api_tests, resources, get_bike_parking,]).launch();
 
 }

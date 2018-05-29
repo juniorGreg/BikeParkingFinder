@@ -1,10 +1,12 @@
 var Vue = require("vue");
-//var App = require('../html/index.html')
-var { LMap, LTileLayer, LMarker, LIconDefault } = require("vue2-leaflet");
+var { LMap, LTileLayer, LMarker} = require("vue2-leaflet");
 
-LIconDefault.props.imagePath.default = "/resources/images";
+var api = require("./BikeParkingFinderAPI-0.1");
 
-alert(LIconDefault.props.imagePath.default);
+//LIconDefault.props.imagePath.default = "/resources/images";
+L.Icon.Default.imagePath = "/resources/images/";
+
+alert(L.Icon.Default.imagePath );
 
 var app = new Vue({
   el: '#app',

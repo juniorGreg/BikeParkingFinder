@@ -5,12 +5,12 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 ## REST API Specifications
 
 ### Get bike parking places
-* URL: /bike_parkings
+* URL: /api/bike_parking
 * Method: GET
 * URL Params:
  * **latitude** geographic latitude of the position wanted **(required)**
  * **longitude**: geographic longitude of the postion wanted **(required)**
- * **radius**: radius of searching in kilometer. Default value: 5.
+ * **radius**: radius of searching in meter. Default value: 350.
  * **count**: maximum number of results. Default value: 10
 * Success Response:
  * Code: 200
@@ -51,7 +51,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
    ```   
 
 ### Create a new bike parking place
-* URL: /bike_parkings
+* URL: /api/bike_parking
 * Method: POST
 * Data Params: JSON Object
 ```javascript
@@ -81,7 +81,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 * Error Response:
 
 ### Confirm a bike parking place existed
-* URL: /bike_parkings/:id
+* URL: /api/bike_parking/:id
 * Method: PUT
 * Data Params: JSON Object
 ```javascript
@@ -106,7 +106,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 * Error Response:
 
 ### Remove a bike parking place existed
-* URL: /bike_parkings/:id
+* URL: /api/bike_parking/:id
 * Method: DELETE
 * Data Params: JSON Object
 * Success Response:
@@ -114,7 +114,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 * Error Response:
 
 ### Modify informations on a bike parking place.
-* URL: /bike_parkings/:id
+* URL: /api/bike_parkings/:id
 * Method: PUT
 * Data Params: JSON Object
 ```javascript
