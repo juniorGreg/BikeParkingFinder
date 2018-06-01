@@ -11,8 +11,9 @@ function error(){
 QUnit.test("Get Bike Parking Place", function(assert){
   var done = assert.async();
 
-  var response = function() {
+  var response = function(response) {
      assert.ok( true, "test resumed from async operation 1" );
+     alert(JSON.stringify(response.data));
      done();
    }
 
@@ -21,7 +22,7 @@ QUnit.test("Get Bike Parking Place", function(assert){
       done();
    }
 
-   api.getBikeParkingPlaces(response, error, 45.00000, -76.0000);
+   api.getBikeParkingPlaces(response, error, 45.46085305860483, -73.57089042663576, 10000);
 
 
 })

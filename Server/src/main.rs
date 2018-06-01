@@ -13,8 +13,8 @@ use std::path::{Path, PathBuf};
 
 #[derive(FromForm)]
 struct BikeParkingQuery{
-    latitude: f32,
-    longitude: f32,
+    latitude: f64,
+    longitude: f64,
     radius: Option<i32>,
     count: Option<i32>
 }
