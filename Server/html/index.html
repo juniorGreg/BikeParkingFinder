@@ -8,24 +8,44 @@
 <body>
     <div id="app">
       <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="nav-brand">
-          <a class="navbar-item" href="https://bulma.io">
-          <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: a modern CSS framework based on Flexbox" width="112" height="28">
-        </a>
+        <div class="navbar-brand">
+          <div class="navbar-item">
+              <img src="/resources/images/ic_directions_bike_grey600_24dp.png" alt="Bike Parking Finder logo" width="48" height="48">
+          </div>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
 
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-          <span aria-hidden="true">asasf</span>
-          <span aria-hidden="true">sdffasd</span>
-          <span aria-hidden="true">safasdf</span>
-        </a>
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                {{ $t("message.Languages") }}
+              </a>
+
+              <div class="navbar-dropdown">
+                 <div class="navbar-item">
+                   <span class="icon">
+                      <i class="fas fa-home"></i>
+                    </span>
+                   fr
+                 </div>
+                 <div class="navbar-item">
+                   en
+                 </div>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
-      <l-map ref="map" :zoom=13 :center="center" @click="get_bike_parking">
-        <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-        <l-marker :lat-lng="bike_position" :icon="bike_icon"></l-marker>
-        <l-circle :lat-lng="bike_position" :radius="radius"></l-circle>
-        <l-marker v-for="bike_parking_place in bike_parking_places" :lat-lng="get_location(bike_parking_place)"></l-marker>
-     </l-map>
+
+        <l-map ref="map" :zoom=13 :center="center" @click="get_bike_parking">
+          <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+          <l-marker :lat-lng="bike_position" :icon="bike_icon"></l-marker>
+          <l-circle :lat-lng="bike_position" :radius="radius"></l-circle>
+          <l-marker v-for="bike_parking_place in bike_parking_places" :lat-lng="get_location(bike_parking_place)"></l-marker>
+       </l-map>
+
     </div>
 
   <script src="resources/index.js"></script>

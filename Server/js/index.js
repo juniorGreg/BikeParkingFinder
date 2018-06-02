@@ -2,9 +2,11 @@ var Vue = require("vue");
 var { LMap, LTileLayer, LMarker, LCircle} = require("vue2-leaflet");
 
 var api = require("./BikeParkingFinderAPI-0.1");
+var locales = require("./locales");
+const i18n = locales.i18n;
 
 //LIconDefault.props.imagePath.default = "/resources/images";
-L.Icon.Default.imagePath = "/resources/images/";
+//L.Icon.Default.imagePath = "/resources/images/";
 
 
 var bikeIcon = L.icon({
@@ -24,6 +26,7 @@ var bikeIcon = L.icon({
 
 
 var app = new Vue({
+  i18n,
   el: '#app',
   components: { LMap, LTileLayer, LMarker, LCircle },
   data: {
@@ -37,8 +40,10 @@ var app = new Vue({
 
   },
 
+
+
   mounted: function(){
-      this.get_current_position();      
+      this.get_current_position();
   },
 
   methods:{
@@ -61,7 +66,7 @@ var app = new Vue({
                   position.coords.latitude,
                   position.coords.longitude,
                   this.radius);
-                  alert("okidoo");
+                  //alert("okidoo");
               }
             );
         }

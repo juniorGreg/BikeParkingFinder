@@ -11,13 +11,21 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bulma": "^0.7.1",
+    "datauri": "^1.1.0",
+    "font-awesome": "^4.7.0",
+    "lodash": "^4.17.10",
     "qunit": "^2.6.1",
     "string-format": "^2.0.0",
     "vue": "^2.5.16",
+    "vue-i18n": "^7.8.0",
     "vue2-leaflet": "^1.0.2"
   },
   "devDependencies": {
+    "browserify": "^16.2.2",
     "browserify-css": "^0.14.0",
+    "fs-extra": "^6.0.1",
+    "gulp": "^3.9.1",
+    "vinyl-source-stream": "^2.0.0",
     "vueify": "^9.4.1"
   },
   "browser": {
