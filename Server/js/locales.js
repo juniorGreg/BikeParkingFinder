@@ -6,15 +6,11 @@ Vue.use(VueI18n);
 
 const messages = {
   fr: {
-    message: {
       Languages: "Langages"
-    }
   },
 
   en: {
-    message: {
-      Languages: "Languages"
-    }
+      Languages: "Languages"    
   }
 
 }

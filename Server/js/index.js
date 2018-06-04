@@ -22,13 +22,33 @@ var bikeIcon = L.icon({
 
 });
 
+var LocaleSelector = Vue.component('locale_selector', {
+
+    props: ["current_locale", "global_locale"],
+
+    methods: {
+      update_locale: function(){
+          this.$emit('update_locale', this.current_locale);
+      }
+    },
+
+    template:`
+        <div class="navbar-item" @click="update_locale">
+            <span v-if="current_locale === global_locale" class="icon">
+                <i class="fa fa-check"></i>
+            </span>
+          {{current_locale}}
+      </div>
+      `
+});
+
 
 
 
 var app = new Vue({
   i18n,
   el: '#app',
-  components: { LMap, LTileLayer, LMarker, LCircle },
+  components: { LMap, LTileLayer, LMarker, LCircle, LocaleSelector},
   data: {
     url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -47,6 +67,10 @@ var app = new Vue({
   },
 
   methods:{
+
+    on_locale_updated: function(event){
+       i18n.locale = event;
+    },
 
 
     update_bike_parking_place: function(response){

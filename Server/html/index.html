@@ -20,19 +20,11 @@
           <div class="navbar-end">
             <div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link">
-                {{ $t("message.Languages") }}
+                {{ $t("Languages") }}
               </a>
 
               <div class="navbar-dropdown">
-                 <div class="navbar-item">
-                   <span class="icon">
-                      <i class="fas fa-home"></i>
-                    </span>
-                   fr
-                 </div>
-                 <div class="navbar-item">
-                   en
-                 </div>
+                  <locale_selector v-for="current_locale in Object.keys($i18n.messages)" :current_locale="current_locale" :global_locale="$i18n.locale" @update_locale="on_locale_updated"></locale_selector>
               </div>
             </div>
           </div>
