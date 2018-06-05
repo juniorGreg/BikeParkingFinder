@@ -1,5 +1,5 @@
 var Vue = require("vue");
-var { LMap, LTileLayer, LMarker, LCircle} = require("vue2-leaflet");
+var { LMap, LTileLayer, LMarker, LCircle, LPopup, LTooltip} = require("vue2-leaflet");
 
 var api = require("./BikeParkingFinderAPI-0.1");
 var locales = require("./locales");
@@ -48,7 +48,7 @@ var LocaleSelector = Vue.component('locale_selector', {
 var app = new Vue({
   i18n,
   el: '#app',
-  components: { LMap, LTileLayer, LMarker, LCircle, LocaleSelector},
+  components: { LMap, LTileLayer, LMarker, LCircle, LPopup, LocaleSelector, LTooltip},
   data: {
     url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',

@@ -6,11 +6,19 @@ Vue.use(VueI18n);
 
 const messages = {
   fr: {
-      Languages: "Langages"
+      Languages: "Langages",
+      Menu: "Menu",
+      Radius_of_research: "Rayon de recherche",
+      name: "nom",
+      capacity: "capacité"
   },
 
   en: {
-      Languages: "Languages"    
+      Languages: "Languages"  ,
+      Menu: "Menu",
+      Radius_of_research: "Raduis of research",
+      name: "name",
+      capacity: "capacity"
   }
 
 }

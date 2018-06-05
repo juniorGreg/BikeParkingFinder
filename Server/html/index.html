@@ -7,16 +7,38 @@
 
 <body>
     <div id="app">
+
       <nav class="navbar" role="navigation" aria-label="main navigation">
+
         <div class="navbar-brand">
           <div class="navbar-item">
               <img src="/resources/images/ic_directions_bike_grey600_24dp.png" alt="Bike Parking Finder logo" width="48" height="48">
           </div>
         </div>
-        <div class="navbar-menu">
-          <div class="navbar-start">
 
+        <div class="navbar-menu">
+
+          <div class="navbar-start">
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                {{ $t("Menu") }}
+              </a>
+              <div class="navbar-dropdown">
+                  <div class="navbar-item">
+                      {{ $t("Radius_of_research") }}
+                      <div class="field">
+                          <div class="control">
+                              <input type="range" name="radius" value=350 min=10 max=1000 v-model="radius">
+                          </div>
+                      </div>
+
+                      {{radius}}
+                  </div>
+              </div>
+
+            </div>
           </div>
+
           <div class="navbar-end">
             <div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link">
@@ -28,15 +50,23 @@
               </div>
             </div>
           </div>
+
         </div>
       </nav>
 
-        <l-map ref="map" :zoom=13 :center="center" @click="get_bike_parking">
+
+      <l-map ref="map" :zoom=13 :center="center" @click="get_bike_parking">
           <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
           <l-marker :lat-lng="bike_position" :icon="bike_icon"></l-marker>
           <l-circle :lat-lng="bike_position" :radius="radius"></l-circle>
-          <l-marker v-for="bike_parking_place in bike_parking_places" :lat-lng="get_location(bike_parking_place)"></l-marker>
-       </l-map>
+          <l-marker v-for="bike_parking_place in bike_parking_places" :lat-lng="get_location(bike_parking_place)">
+                  <l-popup>
+                      <div>{{ $t("name")}}: {{bike_parking_place.name}}</div><br>
+                      <div>{{ $t("capacity") }}: {{bike_parking_place.capacity}}</div>
+                  </l-popup>
+          </l-marker>
+
+      </l-map>
 
     </div>
 
