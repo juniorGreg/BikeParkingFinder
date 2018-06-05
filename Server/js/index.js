@@ -90,7 +90,6 @@ var app = new Vue({
                   position.coords.latitude,
                   position.coords.longitude,
                   this.radius);
-                  //alert("okidoo");
               }
             );
         }
@@ -105,6 +104,11 @@ var app = new Vue({
 
       api.getBikeParkingPlaces(this.update_bike_parking_place, this.callback_error, latitude, longitude, this.radius);
     },
+
+    update_radius: function(){
+      api.getBikeParkingPlaces(this.update_bike_parking_place, this.callback_error, this.bike_position[0], this.bike_position[1], this.radius);
+    },
+
 
     get_location: function(bike_parking_place){
       //alert(bike_parking_place.latitude);

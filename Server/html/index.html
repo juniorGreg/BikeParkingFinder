@@ -28,7 +28,7 @@
                       {{ $t("Radius_of_research") }}
                       <div class="field">
                           <div class="control">
-                              <input type="range" name="radius" value=350 min=10 max=1000 v-model="radius">
+                              <input type="range" name="radius" value=350 min=10 max=1000 v-model="radius" @click="update_radius">
                           </div>
                       </div>
 
