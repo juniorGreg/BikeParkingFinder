@@ -58,6 +58,7 @@ I presently live in Montreal and I use a bike for commuting. I realised while I 
 {
   latitude: 45.00000, //required
   longitude: -76.00000, //required
+  accuracy:  5, //required (in meters)
   name: "default name", //default value
   description: "", //optional
   capacity: 1, //default value

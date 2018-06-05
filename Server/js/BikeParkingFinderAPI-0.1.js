@@ -14,9 +14,10 @@ function getBikeParkingPlaces(response, error, latitude, longitude, radius=350, 
     axios.get(url).then(response).catch(error);
 }
 
-function createBikeParkingPlace()
+function createBikeParkingPlace(response, error, bike_parking_place)
 {
-
+    url = "/api/bike_parking";
+    axios.post(url, bike_parking_place).then(response).catch(error);
 }
 
 function confirmBikeParkingPlace()
@@ -35,3 +36,4 @@ function modifyBikeParkingPlace()
 }
 
 exports.getBikeParkingPlaces = getBikeParkingPlaces;
+exports.createBikeParkingPlace = createBikeParkingPlace;
